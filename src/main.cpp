@@ -4,19 +4,29 @@
 
 #include "main.h"
 
+class EnergyToBattery : public Process{
+    void Behavior(){
+        while(powerGenerated != 0 && !Battery.Empty()){
+            printf("LEAVING\n");
+            Leave(Battery, 1);
+            powerGenerated -= 1.0;
+        }
+    }
+};
+
 class DayLight : public Event{
     void Behavior(){
         double p = Uniform(0, 100);
         if(p > 36){
             //printf("Cloudy weather...\n");
-            powerGenerated = ((((std::round(pw-0.5)*1000000*60)/365)/10)/60)*0.825;
+            powerGenerated += std::round(((((std::round(pw-0.5)*1000000*60)/365)/10)/60)*0.825);
             //printf("%f\n", powerGenerated);
         } else {
             //printf("Sunny weather...\n");
-            powerGenerated = (((std::round(pw-0.5)*1000000*60)/365)/10)/60;
+            powerGenerated += std::round((((std::round(pw-0.5)*1000000*60)/365)/10)/60);
             //printf("%f\n", powerGenerated);
-
         }
+        (new EnergyToBattery)->Activate();
     }
 };
 
@@ -138,6 +148,50 @@ class Generate_Revision : public Event{
     }
 };
 
+class UseElectricity : public Process{
+    void Behavior(){
+        return;
+    }
+};
+
+class UsageWait : public Process{
+    void Behavior(){
+        Seize(Usage);
+        Wait(generateUsage);
+        Release(Usage);
+        powerGenerated += (((hw*1000*60)/365)/24)/60;
+    }
+};
+
+class Generate_Usage : public Event{
+    void Behavior(){
+        (new UsageWait)->Activate();
+        (new UseElectricity)->Activate();
+        Activate(simlib3::Time + generateUsage);
+    }
+};
+
+class UseNetworkElectricity : public Process{
+    void Behavior(){
+        if(powerGenerated > 0 && Battery.Empty()){
+            powerGenerated--;
+        }
+    }
+};
+
+class Generate_Network_Electricity : public Event{
+    void Behavior(){
+        (new UseNetworkElectricity)->Activate();
+        Activate(simlib3::Time);
+    }
+};
+
+class EmptyBattery : public Process{
+    void Behavior(){
+        Enter(Battery, (unsigned long)bc*1000*60);
+    }
+};
+
 int argParse(int argc, char *argv[]);
 
 int main(int argc, char *argv[])
@@ -150,9 +204,12 @@ int main(int argc, char *argv[])
     printf("Output set...\n");
     Init(0, simulation_time);
     printf("Simulation initialised...\n");
+    (new EmptyBattery)->Activate();
     (new Generator_time)->Activate();
     (new Generate_Failure)->Activate();
     (new Generate_Revision)->Activate();
+    (new Generate_Usage)->Activate();
+    //(new Generate_Network_Electricity)->Activate();
 
     Run();
 
@@ -161,6 +218,9 @@ int main(int argc, char *argv[])
     Failure.Output();
     Usage.Output();
     Network.Output();
+    Battery.Output();
+
+    printf("powerGenerated: %f\n", powerGenerated);
 
     return 0;
 }
@@ -211,6 +271,8 @@ int argParse(int argc, char *argv[]){
         rp = std::stod(argv[9]);
         output = argv[10];
     }
+
+    Battery.SetCapacity((unsigned long)bc*1000*60);
 
     return 0;
 }

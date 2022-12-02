@@ -3,7 +3,7 @@
 +----------------------------------------------------------+
 |  Status = BUSY                                           |
 |  Time interval = 0 - 7.776e+08                           |
-|  Number of requests = 12441293                           |
+|  Number of requests = 12441289                           |
 |  Average utilization = 1                                 |
 +----------------------------------------------------------+
   Input queue 'Čas.Q1'
@@ -12,13 +12,13 @@
 +----------------------------------------------------------+
 |  Time interval = 0 - 7.776e+08                           |
 |  Incoming  8812807                                       |
-|  Outcoming  8294093                                      |
-|  Current length = 518714                                 |
-|  Maximal length = 518714                                 |
-|  Average length = 114140                                 |
+|  Outcoming  8294089                                      |
+|  Current length = 518718                                 |
+|  Maximal length = 518718                                 |
+|  Average length = 114141                                 |
 |  Minimal time = 0                                        |
-|  Maximal time = 3.11228e+07                              |
-|  Average time = 9.72777e+06                              |
+|  Maximal time = 3.11231e+07                              |
+|  Average time = 9.72788e+06                              |
 |  Standard deviation = 1.44231e+07                        |
 +----------------------------------------------------------+
 
@@ -39,7 +39,7 @@
 |  Outcoming  10                                           |
 |  Current length = 0                                      |
 |  Maximal length = 2                                      |
-|  Average length = 0.160078                               |
+|  Average length = 0.160079                               |
 |  Minimal time = 1800                                     |
 |  Maximal time = 1.24416e+08                              |
 |  Average time = 1.24477e+07                              |
@@ -62,24 +62,50 @@
 |  Outcoming  6                                            |
 |  Current length = 1                                      |
 |  Maximal length = 1                                      |
-|  Average length = 0.0400636                              |
+|  Average length = 0.0400635                              |
 |  Minimal time = 9897.31                                  |
 |  Maximal time = 3.11039e+07                              |
-|  Average time = 5.19224e+06                              |
+|  Average time = 5.19223e+06                              |
 +----------------------------------------------------------+
 
 +----------------------------------------------------------+
 | FACILITY Spotreba                                        |
 +----------------------------------------------------------+
-|  Status = not BUSY                                       |
+|  Status = BUSY                                           |
 |  Time interval = 0 - 7.776e+08                           |
-|  Number of requests = 6                                  |
-|  Average utilization = 0.0400242                         |
+|  Number of requests = 12441294                           |
+|  Average utilization = 1                                 |
++----------------------------------------------------------+
+  Input queue 'Spotreba.Q1'
++----------------------------------------------------------+
+| QUEUE Q1                                                 |
++----------------------------------------------------------+
+|  Time interval = 0 - 7.776e+08                           |
+|  Incoming  8812807                                       |
+|  Outcoming  8294094                                      |
+|  Current length = 518713                                 |
+|  Maximal length = 518713                                 |
+|  Average length = 114139                                 |
+|  Minimal time = 0                                        |
+|  Maximal time = 3.11228e+07                              |
+|  Average time = 9.72775e+06                              |
+|  Standard deviation = 1.4423e+07                         |
 +----------------------------------------------------------+
 
 +----------------------------------------------------------+
 | FACILITY Sieť                                           |
 +----------------------------------------------------------+
 |  Status = not BUSY                                       |
++----------------------------------------------------------+
+
++----------------------------------------------------------+
+| STORE Batéria                                           |
++----------------------------------------------------------+
+|  Capacity = 240000  (0 used, 240000 free)                |
+|  Time interval = 0 - 7.776e+08                           |
+|  Number of Enter operations = 1                          |
+|  Minimal used capacity = 0                               |
+|  Maximal used capacity = 240000                          |
+|  Average used capacity = 0.0553653                       |
 +----------------------------------------------------------+
 
