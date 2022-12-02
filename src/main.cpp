@@ -68,6 +68,10 @@ int main(int argc, char *argv[])
     Run();
 
     Time_f.Output();
+    Revision.Output();
+    Failure.Output();
+    Usage.Output();
+    Network.Output();
 
     return 0;
 }
