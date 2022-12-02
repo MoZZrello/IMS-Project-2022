@@ -11,7 +11,7 @@ all: $(BASE_FILES)
 	$(CC) $(FLAGS) $(OUTPUT) $(BASE_FILES) $(SIMLIB)
 
 run: all
-	./$(OUTPUT) 3.6 100 150000 4.8 3000 8 0.244 5000 4 30 4000 exp1.dat
+	./$(OUTPUT) 3.6 100 150000 4.8 3000 8 0.244 5000 4000 exp1.dat
 
 clean:
 	rm $(OUTPUT) $(DAT) exp1.dat

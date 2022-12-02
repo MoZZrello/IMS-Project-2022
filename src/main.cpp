@@ -51,6 +51,93 @@ class Generator_time : public Event{
     }
 };
 
+class FailureOccured : public Process{
+    void Behavior(){
+        printf("Nastala porucha...\n");
+        Priority = 1;
+        Seize(Time_f);
+        Seize(Usage);
+        Seize(Failure);
+        Wait(Exponential(6 HOUR));
+        Release(Failure);
+        Release(Usage);
+        Release(Time_f);
+        systemAge = 0;
+    }
+};
+
+class FailurePicker : public Process{
+    void Behavior(){
+        if(failure >= 1){
+            failure -= 1;
+            double p = Uniform(0, 100);
+            if(p <= (fs+(systemAge*1.1))){
+                (new FailureOccured)->Activate();
+            } else {
+                return;
+            }// else it's leaving the system
+        }
+    }
+};
+
+class Fail : public Process{
+    void Behavior(){
+        Seize(Failure);
+        Wait(failureOccurance);
+        Release(Failure);
+        systemAge += 1;
+    }
+};
+
+class Generate_Failure : public Event{
+    void Behavior(){
+        failure += 1;
+        (new Fail)->Activate();
+        (new FailurePicker)->Activate();
+        Activate(simlib3::Time + failureOccurance);
+    }
+};
+
+class RevisionOccured : public Process{
+    void Behavior(){
+        printf("Potrebné revízia...\n");
+        Priority = 2;
+        Seize(Revision);
+        Seize(Time_f);
+        Seize(Usage);
+        Wait(revisionLength);
+        Release(Usage);
+        Release(Time_f);
+        Release(Revision);
+    }
+};
+
+class RevisionNeeded : public Process{
+    void Behavior(){
+        if(revision >= 1){
+            revision -= 1;
+            (new RevisionOccured)->Activate();
+        }
+    }
+};
+
+class RevisionWait : public Process{
+    void Behavior(){
+        Seize(Revision);
+        Wait(revisionOccurance);
+        Release(Revision);
+        revision += 1;
+    }
+};
+
+class Generate_Revision : public Event{
+    void Behavior(){
+        (new RevisionWait)->Activate();
+        (new RevisionNeeded)->Activate();
+        Activate(simlib3::Time + revisionOccurance);
+    }
+};
+
 int argParse(int argc, char *argv[]);
 
 int main(int argc, char *argv[])
@@ -64,6 +151,8 @@ int main(int argc, char *argv[])
     Init(0, simulation_time);
     printf("Simulation initialised...\n");
     (new Generator_time)->Activate();
+    (new Generate_Failure)->Activate();
+    (new Generate_Revision)->Activate();
 
     Run();
 
@@ -82,7 +171,7 @@ int argParse(int argc, char *argv[]){
     int opt = 0;
 
     if(argc == 2 && (strcmp(argv[1], "-help") == 0 || strcmp(argv[1], "-h") == 0)){
-        printf("Použitie: [pw] [up] [pp] [bc] [hw] [kwp] [fs] [fp] [rr] [rl] [rp] [of]\n"
+        printf("Použitie: [pw] [up] [pp] [bc] [hw] [kwp] [fs] [fp] [rp] [of]\n"
                "[pw] Sila solárneho panelu (kWp)\n"
                "[up] Percento využitia energie (Percent) \n"
                "[pp] Cena panelu (Kč)\n"
@@ -91,14 +180,12 @@ int argParse(int argc, char *argv[]){
                "[kwp] Cena za kilowatt (Kč)\n"
                "[fs] Pravdepodobnost chyby systému (Percent)\n"
                "[fp] Cena opravy chyby (Kč)\n"
-               "[rr] Revízia kazdych X rokov (rok)\n"
-               "[rl] Dĺžka revízie (min)\n"
                "[rp] Cena revízie (Kč)\n"
                "[of] Názov súboru pre zápis výsledkov\n"
                "- Všetky parametre sa zadávajú vo formáte FLOAT.\n");
         return 0;
-    } else if(argc != 13) {
-        printf("Použitie: [pw] [up] [pp] [bc] [hw] [kwp] [fs] [fp] [rr] [rl] [rp] [of]\n"
+    } else if(argc != 11) {
+        printf("Použitie: [pw] [up] [pp] [bc] [hw] [kwp] [fs] [fp] [rp] [of]\n"
                "[pw] Sila solárneho panelu (kWp)\n"
                "[up] Percento využitia energie (Percent) \n"
                "[pp] Cena panelu (Kč)\n"
@@ -107,8 +194,6 @@ int argParse(int argc, char *argv[]){
                "[kwp] Cena za kilowatt (Kč)\n"
                "[fs] Pravdepodobnost chyby systému (Percent)\n"
                "[fp] Cena opravy chyby (Kč)\n"
-               "[rr] Revízia kazdych X rokov (rok)\n"
-               "[rl] Dĺžka revízie (min)\n"
                "[rp] Cena revízie (Kč)\n"
                "[of] Názov súboru pre zápis výsledkov\n"
                "- Všetky parametre sa zadávajú vo formáte FLOAT.\n");
@@ -123,10 +208,8 @@ int argParse(int argc, char *argv[]){
         kwp = std::stod(argv[6]);
         fs = std::stod(argv[7]);
         fp = std::stod(argv[8]);
-        rr = std::stod(argv[9]);
-        rl = std::stod(argv[10]);
-        rp = std::stod(argv[11]);
-        output = argv[12];
+        rp = std::stod(argv[9]);
+        output = argv[10];
     }
 
     return 0;

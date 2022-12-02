@@ -22,6 +22,8 @@
 long long times = 0;
 double powerGenerated = 0;
 double inBattery = 0;
+double failure = 0;
+double revision = 0;
 
 const unsigned long long c_SECOND = 1;
 const unsigned long long c_MINUTE = c_SECOND * 60;
@@ -38,14 +40,14 @@ double hw = 3000;      // Spotreba domu (kWh)
 double kwp = 6.5;      // Cena za kilowatt (Kč)
 double fs = 0.244;     // Pravdepodobnost chyby systému (Percent)
 double fp = 5000;      // Cena opravy chyby (Kč)
-double rr = 4 YEAR;    // Revízia kazdych X rokov (rok)
-double rl = 30 MINUTE; // Dĺžka revízie (min)
 double rp = 4000;      // Cena revízie (Kč)
 
 double systemAge = 0;
-long long failureOccurance = 1 YEAR;
-long long generatePower = 1 MINUTE;
-long long generateUsage = 1 MINUTE;
+double failureOccurance = 1 YEAR;
+double generatePower = 1 MINUTE;
+double generateUsage = 1 MINUTE;
+double revisionOccurance = 4 YEAR;
+double revisionLength = 30 MINUTE;
 
 unsigned long long simulation_time = 25 YEAR;
 
