@@ -18,6 +18,8 @@
 #define MONTH * c_MONTH
 #define YEAR * c_YEAR
 
+long long times = 0;
+
 const unsigned long long c_SECOND = 1;
 const unsigned long long c_MINUTE = c_SECOND * 60;
 const unsigned long long c_HOUR = c_MINUTE * 60;
@@ -46,11 +48,12 @@ unsigned long long simulation_time = 25 YEAR;
 
 std::string output = "solar.dat";
 
-Store Revision("Revízor", 1);
-Store Failure("Porucha", 1);
-Store Time("Čas", 1);
-Store Usage("Spotreba", 1);
-Store Network("Sieť", 1);
+Facility Revision("Revízor");
+Facility Failure("Porucha");
+Facility Time("Čas");
+Facility Usage("Spotreba");
+Facility Network("Sieť");
+
 Store Battery("Batéria", (unsigned long)bc*60*1000);
 
 

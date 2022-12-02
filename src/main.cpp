@@ -4,6 +4,28 @@
 
 #include "main.h"
 
+class SystemFunctions : public Process{
+    void Behavior(){
+        if(times >= 1){
+            times -= 1;
+            double p = Uniform(0, 100);
+            if(p > 49.3){
+                printf("it's day\n");
+            } else {
+                printf("it's night\n");
+            } // else it's leaving the system
+        }
+    }
+};
+
+class Generator_time : public Event{
+    void Behavior(){
+        times += 1;
+        (new SystemFunctions)->Activate();
+        Activate(simlib3::Time + generatePower);
+    }
+};
+
 int argParse(int argc, char *argv[]);
 
 int main(int argc, char *argv[])
@@ -11,6 +33,14 @@ int main(int argc, char *argv[])
     if(argParse(argc, argv) == -1){
         return -1;
     }
+    printf("Starting simulation\n");
+    SetOutput(output.c_str());
+    printf("Output set\n");
+    Init(0, simulation_time);
+    printf("Simulation initialised\n");
+    (new Generator_time)->Activate();
+
+    Run();
 
     return 0;
 }
