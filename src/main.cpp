@@ -2,7 +2,24 @@
 // Created by Richard Harman on 1. 12. 2022.
 //
 
+
 #include "main.h"
+
+class DayLight : public Event{
+    void Behavior(){
+        double p = Uniform(0, 100);
+        if(p > 36){
+            //printf("Cloudy weather...\n");
+            powerGenerated = ((((std::round(pw-0.5)*1000000*60)/365)/10)/60)*0.825;
+            //printf("%f\n", powerGenerated);
+        } else {
+            //printf("Sunny weather...\n");
+            powerGenerated = (((std::round(pw-0.5)*1000000*60)/365)/10)/60;
+            //printf("%f\n", powerGenerated);
+
+        }
+    }
+};
 
 class SystemFunctions : public Process{
     void Behavior(){
@@ -10,9 +27,7 @@ class SystemFunctions : public Process{
             times -= 1;
             double p = Uniform(0, 100);
             if(p > 49.3){
-                printf("it's day\n");
-            } else {
-                printf("it's night\n");
+                (new DayLight)->Activate();
             } // else it's leaving the system
         }
     }
@@ -33,11 +48,11 @@ int main(int argc, char *argv[])
     if(argParse(argc, argv) == -1){
         return -1;
     }
-    printf("Starting simulation\n");
+    printf("Starting simulation...\n");
     SetOutput(output.c_str());
-    printf("Output set\n");
+    printf("Output set...\n");
     Init(0, simulation_time);
-    printf("Simulation initialised\n");
+    printf("Simulation initialised...\n");
     (new Generator_time)->Activate();
 
     Run();

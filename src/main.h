@@ -10,6 +10,7 @@
 #include <cstdio>
 #include <cstring>
 #include "iostream"
+#include <cmath>
 
 #define SECOND * c_SECOND
 #define MINUTE * c_MINUTE
@@ -19,6 +20,8 @@
 #define YEAR * c_YEAR
 
 long long times = 0;
+double powerGenerated = 0;
+double inBattery = 0;
 
 const unsigned long long c_SECOND = 1;
 const unsigned long long c_MINUTE = c_SECOND * 60;
@@ -27,17 +30,17 @@ const unsigned long long c_DAY = c_HOUR * 24;
 const unsigned long long c_MONTH = c_DAY * 30;
 const unsigned long long c_YEAR = c_MONTH * 12;
 
-double pw = 0;
-double up = 100;
-double pp = 0;
-double bc = 0;
-double hw = 3000;
-double kwp = 6.5;
-double fs = 0.244;
-double fp = 5000;
-double rr = 4 YEAR;
-double rl = 30 MINUTE;
-double rp = 4000;
+double pw = 0;         // Sila solárneho panelu (kWp)
+double up = 100;       // Percento využitia energie (Percent)
+double pp = 0;         // Cena panelu (Kč)
+double bc = 0;         // Kapacita batérie (kWh)
+double hw = 3000;      // Spotreba domu (kWh)
+double kwp = 6.5;      // Cena za kilowatt (Kč)
+double fs = 0.244;     // Pravdepodobnost chyby systému (Percent)
+double fp = 5000;      // Cena opravy chyby (Kč)
+double rr = 4 YEAR;    // Revízia kazdych X rokov (rok)
+double rl = 30 MINUTE; // Dĺžka revízie (min)
+double rp = 4000;      // Cena revízie (Kč)
 
 double systemAge = 0;
 long long failureOccurance = 1 YEAR;
@@ -46,7 +49,7 @@ long long generateUsage = 1 MINUTE;
 
 unsigned long long simulation_time = 25 YEAR;
 
-std::string output = "solar.dat";
+std::string output = "solar.dat"; // Názov súboru pre zápis výsledkov
 
 Facility Revision("Revízor");
 Facility Failure("Porucha");
