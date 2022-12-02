@@ -21,7 +21,7 @@
 
 long long times = 0;
 double powerGenerated = 0;
-double inBattery = 0;
+double powerUsed = 0;
 double failure = 0;
 double revision = 0;
 

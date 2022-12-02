@@ -3,7 +3,7 @@
 +----------------------------------------------------------+
 |  Status = BUSY                                           |
 |  Time interval = 0 - 7.776e+08                           |
-|  Number of requests = 12441289                           |
+|  Number of requests = 12440989                           |
 |  Average utilization = 1                                 |
 +----------------------------------------------------------+
   Input queue 'Čas.Q1'
@@ -11,15 +11,15 @@
 | QUEUE Q1                                                 |
 +----------------------------------------------------------+
 |  Time interval = 0 - 7.776e+08                           |
-|  Incoming  8812807                                       |
-|  Outcoming  8294089                                      |
-|  Current length = 518718                                 |
-|  Maximal length = 518718                                 |
-|  Average length = 114141                                 |
+|  Incoming  9849607                                       |
+|  Outcoming  9330588                                      |
+|  Current length = 519019                                 |
+|  Maximal length = 519019                                 |
+|  Average length = 383896                                 |
 |  Minimal time = 0                                        |
-|  Maximal time = 3.11231e+07                              |
-|  Average time = 9.72788e+06                              |
-|  Standard deviation = 1.44231e+07                        |
+|  Maximal time = 3.11411e+07                              |
+|  Average time = 3.11273e+07                              |
+|  Standard deviation = 29244.9                            |
 +----------------------------------------------------------+
 
 +----------------------------------------------------------+
@@ -39,10 +39,10 @@
 |  Outcoming  10                                           |
 |  Current length = 0                                      |
 |  Maximal length = 2                                      |
-|  Average length = 0.160079                               |
-|  Minimal time = 1800                                     |
+|  Average length = 0.160161                               |
+|  Minimal time = 1895.67                                  |
 |  Maximal time = 1.24416e+08                              |
-|  Average time = 1.24477e+07                              |
+|  Average time = 1.24542e+07                              |
 +----------------------------------------------------------+
 
 +----------------------------------------------------------+
@@ -50,7 +50,7 @@
 +----------------------------------------------------------+
 |  Status = BUSY                                           |
 |  Time interval = 0 - 7.776e+08                           |
-|  Number of requests = 26                                 |
+|  Number of requests = 27                                 |
 |  Average utilization = 1                                 |
 +----------------------------------------------------------+
   Input queue 'Porucha.Q1'
@@ -58,14 +58,14 @@
 | QUEUE Q1                                                 |
 +----------------------------------------------------------+
 |  Time interval = 0 - 7.776e+08                           |
-|  Incoming  7                                             |
-|  Outcoming  6                                            |
+|  Incoming  21                                            |
+|  Outcoming  20                                           |
 |  Current length = 1                                      |
-|  Maximal length = 1                                      |
-|  Average length = 0.0400635                              |
-|  Minimal time = 9897.31                                  |
+|  Maximal length = 2                                      |
+|  Average length = 0.0403339                              |
+|  Minimal time = 8700                                     |
 |  Maximal time = 3.11039e+07                              |
-|  Average time = 5.19223e+06                              |
+|  Average time = 1.56818e+06                              |
 +----------------------------------------------------------+
 
 +----------------------------------------------------------+
@@ -73,7 +73,7 @@
 +----------------------------------------------------------+
 |  Status = BUSY                                           |
 |  Time interval = 0 - 7.776e+08                           |
-|  Number of requests = 12441294                           |
+|  Number of requests = 12440995                           |
 |  Average utilization = 1                                 |
 +----------------------------------------------------------+
   Input queue 'Spotreba.Q1'
@@ -81,21 +81,24 @@
 | QUEUE Q1                                                 |
 +----------------------------------------------------------+
 |  Time interval = 0 - 7.776e+08                           |
-|  Incoming  8812807                                       |
-|  Outcoming  8294094                                      |
-|  Current length = 518713                                 |
-|  Maximal length = 518713                                 |
-|  Average length = 114139                                 |
+|  Incoming  9849607                                       |
+|  Outcoming  9330594                                      |
+|  Current length = 519013                                 |
+|  Maximal length = 519013                                 |
+|  Average length = 383894                                 |
 |  Minimal time = 0                                        |
-|  Maximal time = 3.11228e+07                              |
-|  Average time = 9.72775e+06                              |
-|  Standard deviation = 1.4423e+07                         |
+|  Maximal time = 3.11407e+07                              |
+|  Average time = 3.11271e+07                              |
+|  Standard deviation = 29217.7                            |
 +----------------------------------------------------------+
 
 +----------------------------------------------------------+
 | FACILITY Sieť                                           |
 +----------------------------------------------------------+
 |  Status = not BUSY                                       |
+|  Time interval = 0 - 7.776e+08                           |
+|  Number of requests = 777600001                          |
+|  Average utilization = 0                                 |
 +----------------------------------------------------------+
 
 +----------------------------------------------------------+
@@ -103,9 +106,9 @@
 +----------------------------------------------------------+
 |  Capacity = 240000  (0 used, 240000 free)                |
 |  Time interval = 0 - 7.776e+08                           |
-|  Number of Enter operations = 1                          |
+|  Number of Enter operations = 118713636                  |
 |  Minimal used capacity = 0                               |
 |  Maximal used capacity = 240000                          |
-|  Average used capacity = 0.0553653                       |
+|  Average used capacity = 142.874                         |
 +----------------------------------------------------------+
 

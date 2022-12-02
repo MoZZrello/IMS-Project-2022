@@ -6,11 +6,15 @@
 
 class EnergyToBattery : public Process{
     void Behavior(){
-        while(powerGenerated != 0 && !Battery.Empty()){
-            printf("LEAVING\n");
-            Leave(Battery, 1);
-            powerGenerated -= 1.0;
-        }
+        double p = Uniform(0, 100);
+        if(p <= up){
+            while(powerGenerated != 0 && !Battery.Empty()){
+                Leave(Battery, 1);
+                powerGenerated -= 1.0;
+            }
+        } else {
+            return;
+        }// else it's leaving the system
     }
 };
 
@@ -150,7 +154,12 @@ class Generate_Revision : public Event{
 
 class UseElectricity : public Process{
     void Behavior(){
-        return;
+        while(powerUsed > 10 && !Battery.Full()){
+            Enter(Battery, 10);
+            powerUsed -= 10;
+        }
+        Enter(Battery, (unsigned long)powerUsed);
+        powerUsed -= powerUsed;
     }
 };
 
@@ -159,7 +168,7 @@ class UsageWait : public Process{
         Seize(Usage);
         Wait(generateUsage);
         Release(Usage);
-        powerGenerated += (((hw*1000*60)/365)/24)/60;
+        powerUsed += round((((hw*1000*60)/365)/24)/60);
     }
 };
 
@@ -173,16 +182,26 @@ class Generate_Usage : public Event{
 
 class UseNetworkElectricity : public Process{
     void Behavior(){
-        if(powerGenerated > 0 && Battery.Empty()){
-            powerGenerated--;
+        if(powerUsed > 299 && Battery.Empty()){
+            powerUsed -= 300;
+        } else if(powerUsed < 299 && Battery.Empty()){
+            powerUsed -= powerUsed;
         }
+    }
+};
+
+class NetworkElectricity : public Process{
+    void Behavior(){
+        Seize(Network);
+        Release(Network);
     }
 };
 
 class Generate_Network_Electricity : public Event{
     void Behavior(){
+        (new NetworkElectricity)->Activate();
         (new UseNetworkElectricity)->Activate();
-        Activate(simlib3::Time);
+        Activate(simlib3::Time + 1);
     }
 };
 
@@ -202,14 +221,14 @@ int main(int argc, char *argv[])
     printf("Starting simulation...\n");
     SetOutput(output.c_str());
     printf("Output set...\n");
-    Init(0, simulation_time);
+    Init(0, (double)simulation_time);
     printf("Simulation initialised...\n");
     (new EmptyBattery)->Activate();
     (new Generator_time)->Activate();
     (new Generate_Failure)->Activate();
     (new Generate_Revision)->Activate();
     (new Generate_Usage)->Activate();
-    //(new Generate_Network_Electricity)->Activate();
+    (new Generate_Network_Electricity)->Activate();
 
     Run();
 
