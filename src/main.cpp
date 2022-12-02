@@ -2,7 +2,6 @@
 // Created by Richard Harman on 1. 12. 2022.
 //
 
-
 #include "main.h"
 
 class DayLight : public Event{
@@ -28,14 +27,25 @@ class SystemFunctions : public Process{
             double p = Uniform(0, 100);
             if(p > 49.3){
                 (new DayLight)->Activate();
-            } // else it's leaving the system
+            } else {
+                return;
+            }// else it's leaving the system
         }
+    }
+};
+
+class Timing : public Process{
+    void Behavior(){
+        Seize(Time_f);
+        Wait(generatePower);
+        Release(Time_f);
     }
 };
 
 class Generator_time : public Event{
     void Behavior(){
         times += 1;
+        (new Timing)->Activate();
         (new SystemFunctions)->Activate();
         Activate(simlib3::Time + generatePower);
     }
@@ -56,6 +66,8 @@ int main(int argc, char *argv[])
     (new Generator_time)->Activate();
 
     Run();
+
+    Time_f.Output();
 
     return 0;
 }

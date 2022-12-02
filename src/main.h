@@ -53,7 +53,7 @@ std::string output = "solar.dat"; // Názov súboru pre zápis výsledkov
 
 Facility Revision("Revízor");
 Facility Failure("Porucha");
-Facility Time("Čas");
+Facility Time_f("Čas");
 Facility Usage("Spotreba");
 Facility Network("Sieť");
 
