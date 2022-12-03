@@ -6,13 +6,7 @@
 
 class EnergyToBattery : public Process{
     void Behavior(){
-        /*double p = Uniform(0, 100);
-        while(powerGenerated != 0){
-            //Leave(Battery, 1);
-            powerGenerated -= 1.0;
-        }*/
-        bp = powerGenerated;
-           
+        inBattery += generated;
     }
 };
 
@@ -21,14 +15,16 @@ class DayLight : public Event{
         double p = Uniform(0, 100);
         if(p > 36){
             //printf("Cloudy weather...\n");
-            powerGenerated += std::round(((((std::round(pw-0.5)*1000000*60)/365)/10)/60)*0.825);
+            generated = std::round(((((std::round(pw-0.5)*1000000*60)/365)/10)/60)*0.825);
+            powerGenerated += generated;
             //printf("%f\n", powerGenerated);
         } else {
             //printf("Sunny weather...\n");
-            powerGenerated += std::round((((std::round(pw-0.5)*1000000*60)/365)/10)/60);
+            generated = std::round((((std::round(pw-0.5)*1000000*60)/365)/10)/60);
+            powerGenerated += generated;
             //printf("%f\n", powerGenerated);
         }
-        //(new EnergyToBattery)->Activate();
+        (new EnergyToBattery)->Activate();
     }
 };
 
@@ -75,6 +71,7 @@ class FailureOccured : public Process{
         Release(Usage);
         Release(Time_f);
         systemAge = 0;
+        pp += fp;
     }
 };
 
@@ -98,6 +95,12 @@ class Fail : public Process{
         Wait(failureOccurance);
         Release(Failure);
         systemAge += 1;
+        years += 1;
+        if(fromBattery/60000/years <= 4000){
+            pp += 588;
+        } else {
+            pp += 5988;
+        }
     }
 };
 
@@ -110,10 +113,10 @@ class Generate_Failure : public Event{
     }
 };
 
-///////kontrola revizora wait 30 minut a potom procesy vrati
+// kontrola revizora wait 30 minut a potom procesy vrati
 class RevisionOccured : public Process{
     void Behavior(){
-        printf("Potrebné revízia...\n");
+        printf("Potrebná revízia...\n");
         Priority = 2;
         Seize(Revision);
         Seize(Time_f);
@@ -122,6 +125,7 @@ class RevisionOccured : public Process{
         Release(Usage);
         Release(Time_f);
         Release(Revision);
+        pp += rp;
     }
 };
 
@@ -156,12 +160,25 @@ class Generate_Revision : public Event{
 
 class UseElectricity : public Process{
     void Behavior(){
-        while(powerUsed > 10 /*&& !Battery.Full()*/){
-            //Enter(Battery, 10);
-            powerUsed -= 10;
+        //printf("Míňame energiu... %f\n", powerUsed);
+        if(inBattery >= powerUsed){
+            fromBattery += powerUsed;
+            inBattery -= powerUsed;
+            powerUsed -= powerUsed;
+        } else {
+            fromNetwork += powerUsed;
+            powerUsed -= powerUsed;
         }
-        //Enter(Battery, (unsigned long)powerUsed);
-        powerUsed -= powerUsed;
+        while((int)powerUsed != 0){
+            if(inBattery > 0){
+                powerUsed -= 1;
+                inBattery -= 1;
+                fromBattery += 1;
+            } else {
+                powerUsed -= 1;
+                fromNetwork += 1;
+            }
+        }
     }
 };
 
@@ -171,7 +188,7 @@ class UsageWait : public Process{
         Seize(Usage);
         Wait(generateUsage);
         Release(Usage);
-        powerUsed += round(bp+(((hw*1000*60)/365)/24)/60);
+        powerUsed += ((((hw*1000*60)/365)/24)/60)/100*(100-es);
     }
 };
 
@@ -207,10 +224,14 @@ int main(int argc, char *argv[])
     Revision.Output();
     Failure.Output();
     Usage.Output();
-    Network.Output();
-    //Battery.Output();
 
-    printf("powerGenerated: %f\n", powerGenerated);
+    printf("Panely vytvorili: %f kWh/ročne\n", powerGenerated/60000/years);
+    printf("Z virtuálnej batérie sa spotrebovalo: %f kWh/ročne\n", fromBattery/60000/years);
+    printf("Zo siete sa spotrebovalo: %f kWh/ročne\n", fromNetwork/60000/years);
+    printf("V batérii sa nachádza na konci: %f kWh\n", inBattery/60000);
+    printf("Šetrí ročne: %f Kč\n",(fromBattery/60000/25)*kwp);
+    double returnOfPanelPrice = pp/((fromBattery/60000/25)*kwp);
+    printf("Návratnosť: %f rokov\n", returnOfPanelPrice);
 
     return 0;
 }
@@ -221,12 +242,11 @@ int argParse(int argc, char *argv[]){
     int opt = 0;
 
     if(argc == 2 && (strcmp(argv[1], "-help") == 0 || strcmp(argv[1], "-h") == 0)){
-        printf("Použitie: [pw] [up] [pp] [bc] [hw] [kwp] [fs] [fp] [rp] [of]\n"
+        printf("Použitie: [pw] [pp] [hw] [es] [kwp] [fs] [fp] [rp] [of]\n"
                "[pw] Sila solárneho panelu (kWp)\n"
-               "[up] Percento využitia energie (Percent) \n"
                "[pp] Cena panelu (Kč)\n"
-               "[bc] Kapacita batérie (kWh)\n"
                "[hw] Spotreba domu (kWh)\n"
+               "[es] Šetrenie spotreby (Percent)\n"
                "[kwp] Cena za kilowatt (Kč)\n"
                "[fs] Pravdepodobnost chyby systému (Percent)\n"
                "[fp] Cena opravy chyby (Kč)\n"
@@ -234,13 +254,12 @@ int argParse(int argc, char *argv[]){
                "[of] Názov súboru pre zápis výsledkov\n"
                "- Všetky parametre sa zadávajú vo formáte FLOAT.\n");
         return 0;
-    } else if(argc != 11) {
-        printf("Použitie: [pw] [up] [pp] [bc] [hw] [kwp] [fs] [fp] [rp] [of]\n"
+    } else if(argc != 10) {
+        printf("Použitie: [pw] [pp] [hw] [es] [kwp] [fs] [fp] [rp] [of]\n"
                "[pw] Sila solárneho panelu (kWp)\n"
-               "[up] Percento využitia energie (Percent) \n"
                "[pp] Cena panelu (Kč)\n"
-               "[bc] Kapacita batérie (kWh)\n"
                "[hw] Spotreba domu (kWh)\n"
+               "[es] Šetrenie spotreby (Percent)\n"
                "[kwp] Cena za kilowatt (Kč)\n"
                "[fs] Pravdepodobnost chyby systému (Percent)\n"
                "[fp] Cena opravy chyby (Kč)\n"
@@ -251,15 +270,14 @@ int argParse(int argc, char *argv[]){
         return -1;
     } else {
         pw = std::stod(argv[1]);
-        up = std::stod(argv[2]);
-        pp = std::stod(argv[3]);
-        bc = std::stod(argv[4]);
-        hw = std::stod(argv[5]);
-        kwp = std::stod(argv[6]);
-        fs = std::stod(argv[7]);
-        fp = std::stod(argv[8]);
-        rp = std::stod(argv[9]);
-        output = argv[10];
+        pp = std::stod(argv[2]);
+        hw = std::stod(argv[3]);
+        es = std::stod(argv[4]);
+        kwp = std::stod(argv[5]);
+        fs = std::stod(argv[6]);
+        fp = std::stod(argv[7]);
+        rp = std::stod(argv[8]);
+        output = argv[9];
     }
 
     //Battery.SetCapacity((unsigned long)bc*1000*60);
