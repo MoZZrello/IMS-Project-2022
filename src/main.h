@@ -41,6 +41,7 @@ double kwp = 6.5;      // Cena za kilowatt (Kč)
 double fs = 0.244;     // Pravdepodobnost chyby systému (Percent)
 double fp = 5000;      // Cena opravy chyby (Kč)
 double rp = 4000;      // Cena revízie (Kč)
+double bp = 0;         //battery power
 
 double systemAge = 0;
 double failureOccurance = 1 YEAR;
@@ -59,7 +60,7 @@ Facility Time_f("Čas");
 Facility Usage("Spotreba");
 Facility Network("Sieť");
 
-Store Battery("Batéria", (unsigned long)bc*60*1000);
+//Store Battery("Batéria", (unsigned long)bc*60*1000);
 
 
 #endif //IMS_PROJECT_2022_MAIN_H

@@ -6,15 +6,13 @@
 
 class EnergyToBattery : public Process{
     void Behavior(){
-        double p = Uniform(0, 100);
-        if(p <= up){
-            while(powerGenerated != 0 && !Battery.Empty()){
-                Leave(Battery, 1);
-                powerGenerated -= 1.0;
-            }
-        } else {
-            return;
-        }// else it's leaving the system
+        /*double p = Uniform(0, 100);
+        while(powerGenerated != 0){
+            //Leave(Battery, 1);
+            powerGenerated -= 1.0;
+        }*/
+        bp = powerGenerated;
+           
     }
 };
 
@@ -30,7 +28,7 @@ class DayLight : public Event{
             powerGenerated += std::round((((std::round(pw-0.5)*1000000*60)/365)/10)/60);
             //printf("%f\n", powerGenerated);
         }
-        (new EnergyToBattery)->Activate();
+        //(new EnergyToBattery)->Activate();
     }
 };
 
@@ -112,6 +110,7 @@ class Generate_Failure : public Event{
     }
 };
 
+///////kontrola revizora wait 30 minut a potom procesy vrati
 class RevisionOccured : public Process{
     void Behavior(){
         printf("Potrebné revízia...\n");
@@ -126,6 +125,7 @@ class RevisionOccured : public Process{
     }
 };
 
+//po 4 rokoch sa ide vykonatt revizia
 class RevisionNeeded : public Process{
     void Behavior(){
         if(revision >= 1){
@@ -135,6 +135,7 @@ class RevisionNeeded : public Process{
     }
 };
 
+//cakam 4 roky na reviziu
 class RevisionWait : public Process{
     void Behavior(){
         Seize(Revision);
@@ -144,6 +145,7 @@ class RevisionWait : public Process{
     }
 };
 
+//vygenerujem reviziu
 class Generate_Revision : public Event{
     void Behavior(){
         (new RevisionWait)->Activate();
@@ -154,21 +156,22 @@ class Generate_Revision : public Event{
 
 class UseElectricity : public Process{
     void Behavior(){
-        while(powerUsed > 10 && !Battery.Full()){
-            Enter(Battery, 10);
+        while(powerUsed > 10 /*&& !Battery.Full()*/){
+            //Enter(Battery, 10);
             powerUsed -= 10;
         }
-        Enter(Battery, (unsigned long)powerUsed);
+        //Enter(Battery, (unsigned long)powerUsed);
         powerUsed -= powerUsed;
     }
 };
 
+//spotreba ->opyta sa na 1 a vrati naspat 1
 class UsageWait : public Process{
     void Behavior(){
         Seize(Usage);
         Wait(generateUsage);
         Release(Usage);
-        powerUsed += round((((hw*1000*60)/365)/24)/60);
+        powerUsed += round(bp+(((hw*1000*60)/365)/24)/60);
     }
 };
 
@@ -180,36 +183,6 @@ class Generate_Usage : public Event{
     }
 };
 
-class UseNetworkElectricity : public Process{
-    void Behavior(){
-        if(powerUsed > 299 && Battery.Empty()){
-            powerUsed -= 300;
-        } else if(powerUsed < 299 && Battery.Empty()){
-            powerUsed -= powerUsed;
-        }
-    }
-};
-
-class NetworkElectricity : public Process{
-    void Behavior(){
-        Seize(Network);
-        Release(Network);
-    }
-};
-
-class Generate_Network_Electricity : public Event{
-    void Behavior(){
-        (new NetworkElectricity)->Activate();
-        (new UseNetworkElectricity)->Activate();
-        Activate(simlib3::Time + 1);
-    }
-};
-
-class EmptyBattery : public Process{
-    void Behavior(){
-        Enter(Battery, (unsigned long)bc*1000*60);
-    }
-};
 
 int argParse(int argc, char *argv[]);
 
@@ -223,12 +196,10 @@ int main(int argc, char *argv[])
     printf("Output set...\n");
     Init(0, (double)simulation_time);
     printf("Simulation initialised...\n");
-    (new EmptyBattery)->Activate();
     (new Generator_time)->Activate();
     (new Generate_Failure)->Activate();
     (new Generate_Revision)->Activate();
     (new Generate_Usage)->Activate();
-    (new Generate_Network_Electricity)->Activate();
 
     Run();
 
@@ -237,7 +208,7 @@ int main(int argc, char *argv[])
     Failure.Output();
     Usage.Output();
     Network.Output();
-    Battery.Output();
+    //Battery.Output();
 
     printf("powerGenerated: %f\n", powerGenerated);
 
@@ -291,7 +262,7 @@ int argParse(int argc, char *argv[]){
         output = argv[10];
     }
 
-    Battery.SetCapacity((unsigned long)bc*1000*60);
+    //Battery.SetCapacity((unsigned long)bc*1000*60);
 
     return 0;
 }
